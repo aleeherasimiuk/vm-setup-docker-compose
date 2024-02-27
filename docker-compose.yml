@@ -131,11 +131,11 @@ services:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
       - /home/ubuntu/vol1/prometheus-data:/prometheus
     command:
-      - --storage.tsdb.retention.time=7d
-      - --config.file=/etc/prometheus/prometheus.yml
-      - --storage.tsdb.path=/prometheus
-      networks:
-        - monitoring
+      - "--storage.tsdb.retention.time=7d"
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+    networks:
+      - monitoring
 
   node_exporter:
     image: 'prom/node-exporter'
