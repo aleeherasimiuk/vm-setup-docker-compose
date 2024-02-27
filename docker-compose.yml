@@ -126,7 +126,7 @@ services:
     restart: always
     ports:
       - 9090:9090
-    user: ${UID}:${GID}
+    user: 1000:1000
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
       - /home/ubuntu/vol1/prometheus-data:/prometheus
@@ -270,5 +270,5 @@ networks:
   firefly_iii:
   smtp4dev:
   nginx-proxy:
-  
+
 
