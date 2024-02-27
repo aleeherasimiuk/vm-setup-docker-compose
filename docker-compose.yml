@@ -57,7 +57,7 @@ services:
       timeout: 5s
       retries: 5
     volumes:
-      - /home/ubuntu/vol1/mysql:/var/lib/mysql
+      - /home/ubuntu/vol1/owncloud_mysql:/var/lib/mysql
     networks:
       - owncloud
 
@@ -237,7 +237,7 @@ prometheus:
     container_name: smtp4dev
     restart: unless-stopped
     ports:
-      - 3000:80
+      - 3001:80
       - 2025:25
     volumes:
       - /home/ubuntu/vol1/smtp4dev-data:/var/smtp4dev
