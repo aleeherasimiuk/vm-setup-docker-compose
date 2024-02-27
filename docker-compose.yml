@@ -120,22 +120,22 @@ services:
       - mongo
    
 
-prometheus:
-   image: prom/prometheus:latest
-   container_name: prometheus
-   restart: always
-   ports:
-    - 9090:9090
-   user: ${UID}:${GID}
-   volumes:
-    - ./prometheus.yml:/etc/prometheus/prometheus.yml
-    - /home/ubuntu/vol1/prometheus-data:/prometheus
-   command:
-    - --storage.tsdb.retention.time=7d
-    - --config.file=/etc/prometheus/prometheus.yml
-    - --storage.tsdb.path=/prometheus
-    networks:
-      - monitoring
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    restart: always
+    ports:
+      - 9090:9090
+    user: ${UID}:${GID}
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - /home/ubuntu/vol1/prometheus-data:/prometheus
+    command:
+      - --storage.tsdb.retention.time=7d
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      networks:
+        - monitoring
 
   node_exporter:
     image: 'prom/node-exporter'
