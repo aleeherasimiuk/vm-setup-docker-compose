@@ -261,4 +261,14 @@ services:
       - monitoring
       - smtp4dev
 
+networks:
+  owncloud:
+  portainer:
+  postgres:
+  mongo:
+  monitoring:
+  firefly_iii:
+  smtp4dev:
+  nginx-proxy:
+    external: true
 
