@@ -270,5 +270,5 @@ networks:
   firefly_iii:
   smtp4dev:
   nginx-proxy:
-    external: true
+  
 
