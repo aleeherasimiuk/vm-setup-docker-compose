@@ -204,7 +204,7 @@ services:
     networks:
       - firefly_iii
     ports:
-      - 80:8080
+      - 8081:8080
     depends_on:
       - db
 
@@ -237,8 +237,8 @@ services:
     container_name: smtp4dev
     restart: unless-stopped
     ports:
-      - 3001:80
-      - 2025:25
+      - 3000:80
+      - "2025:25"
     volumes:
       - /home/ubuntu/vol1/smtp4dev-data:/var/smtp4dev
     networks:
