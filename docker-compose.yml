@@ -126,7 +126,7 @@ services:
     restart: always
     ports:
       - 9090:9090
-    user: 1000:1000
+    user: ${UID}:{UID}
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
       - /home/ubuntu/vol1/prometheus-data:/prometheus
@@ -163,7 +163,7 @@ services:
     restart: always
     ports:
       - "3000:3000"
-    user: "1000:1000"
+    user: "${UID}:{UID}"
     volumes:
       - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
       - ./grafana/datasources:/etc/grafana/provisioning/
