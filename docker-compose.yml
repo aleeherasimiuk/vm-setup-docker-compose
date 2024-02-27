@@ -38,6 +38,8 @@ services:
       retries: 5
     volumes:
       - /home/ubuntu/vol1/owncloud-data:/mnt/data
+    networks:
+      - owncloud
 
   mariadb:
     image: mariadb:10.6 # minimum required ownCloud version is 10.9
@@ -56,6 +58,8 @@ services:
       retries: 5
     volumes:
       - /home/ubuntu/vol1/mysql:/var/lib/mysql
+    networks:
+      - owncloud
 
   redis:
     image: redis:6
@@ -69,17 +73,8 @@ services:
       retries: 5
     volumes:
       - redis:/data
-
-  nginx:
-    image: 'jc21/nginx-proxy-manager:latest'
-    restart: unless-stopped
-    ports:
-      - 80:80
-      - 81:81
-      - 443:443
-    volumes:
-      - /home/ubuntu/vol1/nginx-data:/data
-      - /home/ubuntu/vol1/letsencrypt:/etc/letsencrypt
+    networks:
+      - owncloud
 
 
   portainer:
@@ -92,6 +87,8 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /home/ubuntu/vol1/portainer-data:/data
+    networks:
+      - portainer
     # ports:
     #   - 9000:9000
 
@@ -106,6 +103,8 @@ services:
       - /home/ubuntu/vol1/postgres-data:/var/lib/postgresql/data
     environment:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    networks:
+      - postgres
   
   mongo:
     image: mongo:7.0.5-jammy
@@ -117,6 +116,8 @@ services:
       - 27017:27017
     volumes:
       - /home/ubuntu/vol1/mongo-data:/data/db
+    networks:
+      - mongo
    
 
 prometheus:
@@ -133,6 +134,8 @@ prometheus:
     - --storage.tsdb.retention.time=7d
     - --config.file=/etc/prometheus/prometheus.yml
     - --storage.tsdb.path=/prometheus
+    networks:
+      - monitoring
 
   node_exporter:
     image: 'prom/node-exporter'
@@ -149,6 +152,8 @@ prometheus:
         - '--path.rootfs=/rootfs'
         - '--path.sysfs=/host/sys'
         - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    networks:
+      - monitoring
 
 
   # https://github.com/mefengl/example-monitoring/tree/main/grafana-provisioning/dashboards
@@ -163,6 +168,8 @@ prometheus:
       - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
       - ./grafana/datasources:/etc/grafana/provisioning/
       - /home/ubuntu/vol1/grafana-data:/var/lib/grafana
+    networks:
+      - monitoring
       
 
 
@@ -181,5 +188,77 @@ prometheus:
       - /dev/kmsg
     privileged: true
     restart: always
+    networks:
+      - monitoring
+
+
+
+  firefly:
+    image: fireflyiii/core:latest
+    hostname: app
+    container_name: firefly_iii_core
+    restart: always
+    volumes:
+      - /home/ubuntu/vol1/firefly-iii-upload:/var/www/html/storage/upload
+    env_file: .firefly.env
+    networks:
+      - firefly_iii
+    ports:
+      - 80:8080
+    depends_on:
+      - db
+
+  db:
+    image: mariadb:lts
+    hostname: db
+    container_name: firefly_iii_db
+    restart: always
+    env_file: .firefly.db.env
+    networks:
+      - firefly_iii
+    volumes:
+      - /home/ubuntu/vol1/firefly-iii-db:/var/lib/mysql
+
+  cron:
+    #
+    # To make this work, set STATIC_CRON_TOKEN in your .env file or as an environment variable and replace REPLACEME below
+    # The STATIC_CRON_TOKEN must be *exactly* 32 characters long
+    #
+    image: alpine
+    restart: always
+    container_name: firefly_iii_cron
+    command: sh -c "echo \"0 3 * * * wget -qO- http://app:8080/api/v1/cron/pWLqWRwEFU8o985GZ8Fd*a78QR^j*bcp\" | crontab - && crond -f -L /dev/stdout"
+    networks:
+      - firefly_iii
+
+
+  smtp4dev:
+    image: rnwood/smtp4dev:latest
+    container_name: smtp4dev
+    restart: unless-stopped
+    ports:
+      - 3000:80
+      - 2025:25
+    volumes:
+      - /home/ubuntu/vol1/smtp4dev-data:/var/smtp4dev
+    networks:
+      - smtp4dev
+
+  nginx:
+    image: 'jc21/nginx-proxy-manager:latest'
+    restart: unless-stopped
+    ports:
+      - 80:80
+      - 81:81
+      - 443:443
+    volumes:
+      - /home/ubuntu/vol1/nginx-data:/data
+      - /home/ubuntu/vol1/letsencrypt:/etc/letsencrypt
+    networks:
+      - nginx-proxy
+      - firefly_iii
+      - owncloud
+      - monitoring
+      - smtp4dev
 
 
