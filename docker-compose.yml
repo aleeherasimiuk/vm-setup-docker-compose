@@ -126,7 +126,7 @@ services:
     restart: always
     ports:
       - 9090:9090
-    user: ${UID}:${UID}
+    user: root
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
       - /home/ubuntu/vol1/prometheus-data:/prometheus
@@ -163,7 +163,7 @@ services:
     restart: always
     ports:
       - "3000:3000"
-    user: "${UID}:${UID}"
+    user: root
     volumes:
       - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
       - ./grafana/datasources:/etc/grafana/provisioning/
@@ -237,7 +237,6 @@ services:
     container_name: smtp4dev
     restart: unless-stopped
     ports:
-      - 3001:80
       - "2025:25"
     volumes:
       - /home/ubuntu/vol1/smtp4dev-data:/var/smtp4dev
@@ -260,6 +259,7 @@ services:
       - owncloud
       - monitoring
       - smtp4dev
+      - portainer
 
 networks:
   owncloud:
